@@ -71,13 +71,11 @@ while True:
     temp_f_feet = temp_c_feet * 9.0 / 5.0 + 32.0
     streamer.log("feet temperature(C)", temp_c_feet)
     streamer.log("feet temperature(F)", temp_f_feet)
-    time.sleep(.5)
 
     temp_c_front = read_temp_front()
     temp_f_front = temp_c_front * 9.0 / 5.0 + 32.0
     streamer.log("front temperature(C)", temp_c_front)
     streamer.log("front temperature(F)", temp_f_front)
-    time.sleep(.5)
 
     temp_c_headliner = read_temp_headliner()
     temp_f_headliner = temp_c_headliner * 9.0 / 5.0 + 32.0
