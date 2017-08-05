@@ -6,22 +6,22 @@
 #__email__ = "<>"
 #__status__ = "Test"
 
-import os                                 ## system terminal access
-from gps import * 				                ## import the gps module
-from time import * 				                ## import time for sleeping
-import threading 				                  ## import threading
-from sys import exit 			                ## for the exit routine
-import RPi.GPIO as GPIO 			            ## import library to control GPIO pins
-from ISStreamer.Streamer import Streamer 	## import the Initial State Streamer
-from geopy.geocoders import Nominatim 		## import the Geopy geocoder
-from geopy.exc import GeocoderTimedOut 		## import GeocoderTimedOut to handle Geo timeouts 
-import sys, traceback 				            ## import sys and traceback for exception handling
-import glob					                      ## pathnames pattern matching
+import os                                        ## system terminal access
+from gps import *                                ## import the gps module
+from time import *                               ## import time for sleeping
+import threading                                 ## import threading
+from sys import exit                             ## for the exit routine
+import RPi.GPIO as GPIO                          ## import library to control GPIO pins
+from ISStreamer.Streamer import Streamer         ## import the Initial State Streamer
+from geopy.geocoders import Nominatim            ## import the Geopy geocoder
+from geopy.exc import GeocoderTimedOut           ## import GeocoderTimedOut to handle Geo timeouts 
+import sys, traceback                            ## import sys and traceback for exception handling
+import glob                                      ## pathnames pattern matching
  
-geolocator=Nominatim() 				            ## call the geocoder "geolocator"
-gpsd = gps(mode=WATCH_ENABLE) 			      ## set gpsd to start gps info
+geolocator=Nominatim()                           ## call the geocoder "geolocator"
+gpsd = gps(mode=WATCH_ENABLE)                    ## set gpsd to start gps info
  
-#prev_input=0 					                  ## set prev_input's initial value to 0, probably not really handy for streamer
+#prev_input=0                                    ## set prev_input's initial value to 0, probably not really handy for streamer
  
 ## designate bucket name and individual access_key, dataset will append to existing bucket
 streamer=Streamer(bucket_name="stokkezeroGPSDATA",bucket_key="3e198e35-2310-4fff-b740-abd98f590f5d", access_key="<access-key>")
