@@ -7,7 +7,7 @@ streamer = Streamer(bucket_name="Baby carriage sensors", bucket_key="Carriage_se
 
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
-
+ 
 base_dir_feet = '/sys/bus/w1/devices/28-031655b78bff/w1_slave'
 base_dir_front = '/sys/bus/w1/devices/28-041658f324ff/w1_slave'
 base_dir_headliner = '/sys/bus/w1/devices/28-041658f430ff/w1_slave'
