@@ -13,15 +13,16 @@ The following sensor inputs are used:
 | ------------- |:-------------:| -----:|
 | temperature (pi)     | tempenviro = round(weather.temperature(),2) |  |
 | temperature (enviro)     | centered      |   |
-| temperature (ds18 sensor headliner)	 | are neat      |    |
+| temperature (ds18 sensor headliner)	 |      |    |
 | pressure | pressureenviro = round(weather.pressure(),2)      |   |
 | heading (enviro motion) | headingenviro = motion.heading()      |   |
 | light (intensity, dark-bright) | lightenviro = light.light()      |  |
 | latitude (gps) |       |    |
 | longitude (gps) |       |   |
-| speed (gps) | are neat      |    |
-| altitude (gps) | are neat      |    |
+| speed (gps) |      |    |
+| altitude (gps) |      |    |
 | heading (gps, north east south west) |       |    |
 | satellites (gps, #) |      |    |
 | stance (enviro, accelerometer 3-axis)	 |       |  |
 
+In order to use the ds18b20, which connects to GPIO 4, the LEDs of the enviroPHAT are not connected (as they also use GPIO 4). So no illumination but we retain the light intensity sensor.
