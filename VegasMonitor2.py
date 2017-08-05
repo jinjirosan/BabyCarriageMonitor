@@ -98,10 +98,10 @@ if __name__ == '__main__':
 			print
 			print 'sats ' , gpsd.satellites
 
-			## the geolocator requires a string so we turn lat and long into one
+			## the geolocator requires a string, turn latitude and longitude into string
 			coordinates = str(gpsd.fix.latitude) + "," + str(gpsd.fix.longitude)
 
-			## stream whatever you'd like to collect from the gps
+			## stream collected data from gps
 			streamer.log("Coordinates",coordinates)
 			streamer.log("Reported Time",gpsd.utc,)
 			streamer.log("Altitude (m)",gpsd.fix.altitude)
