@@ -12,7 +12,7 @@ The following sensor inputs are used:
 | Sensor        | cmd           |  |
 | ------------- |:-------------:| -----:|
 | temperature (pi)     | tempenviro = round(weather.temperature(),2) |  |
-| temperature (enviro)     | centered      |   |
+| temperature (enviro)     |       |   |
 | temperature (ds18 sensor headliner)	 |      |    |
 | pressure | pressureenviro = round(weather.pressure(),2)      |   |
 | heading (enviro motion) | headingenviro = motion.heading()      |   |
