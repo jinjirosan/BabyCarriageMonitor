@@ -1,5 +1,5 @@
 #__author__ = "jinjirosan"
-#__credits__ = ["Dan Mandle", ""]
+#__credits__ = ["", ""]
 #__license__ = "GPL"
 #__version__ = "2.0.1"
 #__maintainer__ = "jinjirosan"
