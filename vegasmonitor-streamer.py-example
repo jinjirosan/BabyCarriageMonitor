@@ -153,10 +153,10 @@ try:
         print '----------------------------------------'
         print 'sats ' , gpsd.satellites
 
-        ## the geolocator requires a string so we turn lat and long into one
+        ## turn latitude and longitude into string
         coordinates = str(gpsd.fix.latitude) + "," + str(gpsd.fix.longitude)
 
-        ## stream whatever you'd like to collect from the gps
+        ## data streamers to initialstate
         streamer.log("Coordinates",coordinates)
         streamer.log("Reported Time",gpsd.utc,)
         streamer.log("Altitude (m)",gpsd.fix.altitude)
@@ -186,14 +186,18 @@ try:
         streamer.log("enviro accelerometer Z (yaw)" , z)
 
 	time.sleep(5)
-        ## if the geocoder times out, stream a message and keep looping
+        ## keep loop active even if streamer times out
 except GeocoderTimedOut as e:
         streamer.log("msg","Geocoder Timeout")
         pass
 
 ## pressing CTRL-C or the system exits itself, print a message and close everything
-except (KeyboardInterrupt, SystemExit):         # pressing ctrl+c
+except (KeyboardInterrupt, SystemExit):         # user interupt, CTRL-C
         print "\nKilling Thread..."
-
+        streamer.close() 			# finish all streamer data
+        gpsd.running = False
+        gpsd.join() 				# clear threads
+        print "Done.\nExiting."
+        exit() 					# allllll done, nothn to see here :-)
 #if __name__ == "__main__":
 #    main()
