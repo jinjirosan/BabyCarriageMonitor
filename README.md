@@ -26,3 +26,7 @@ The following sensor inputs are used:
 | stance (enviro, accelerometer 3-axis)	 |       |  |
 
 In order to use the ds18b20, which connects to GPIO 4, the LEDs of the enviroPHAT are not connected (as they also use GPIO 4). So no illumination but we retain the light intensity sensor.
+
+Muiltple files fo multiple goals:
+- stream to Initial State --> vegasmonitor-streamer.py-example
+- stream to Cayenne --> vegasmonitor-mqtt.py-example
