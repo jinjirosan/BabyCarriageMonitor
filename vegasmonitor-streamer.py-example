@@ -21,7 +21,7 @@ geolocator=Nominatim()
 gpsd = gps(mode=WATCH_ENABLE)
 
 ## designate bucket name and individual access_key, dataset will append to existing bucket
-streamer=Streamer(bucket_name="stokkezeroGPSDATA",bucket_key="<insert bucket key here>", access_key="<insert AI key here>")
+streamer=Streamer(bucket_name="stokkezeroGPSDATA",bucket_key="<insert bucket key here>", access_key="<insert API key here>")
 
 ## modprobes for ds18b20 temp sensor
 os.system('modprobe w1-gpio')
