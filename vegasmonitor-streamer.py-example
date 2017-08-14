@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #
-# Maintained by https://github.com/jinjirosan
+# Maintainer 	: JinjiroSan
+# Version	: vegasmonitor 2.0 - initialstate_streamer 
 
 import os
 import sys
@@ -20,7 +21,7 @@ geolocator=Nominatim()
 gpsd = gps(mode=WATCH_ENABLE)
 
 ## designate bucket name and individual access_key, dataset will append to existing bucket
-streamer=Streamer(bucket_name="stokkezeroGPSDATA",bucket_key="<insert your bucket key>", access_key="<insert your api key>")
+streamer=Streamer(bucket_name="stokkezeroGPSDATA",bucket_key="<insert bucket key>", access_key="<insert API key>")
 
 ## modprobes for ds18b20 temp sensor
 os.system('modprobe w1-gpio')
@@ -83,21 +84,6 @@ def read_temp_headliner():
         temp_c_headliner = float(temp_string_headliner) / 1000.0
         return temp_c_headliner
 
-temp_cpu = get_cpu_temperature()
-temp_raw = round(weather.temperature(),2)
-temp = round(read_enviro_temp(),2)
-heading = read_enviro_heading()
-axes = read_enviro_accelerometer()
-pressure = round(read_enviro_pressure(),1)
-rainchance = rainchance(pressure)
-light = read_enviro_light()
-temp_c_headliner = round(read_temp_headliner(),2)
-temp_f_headliner = temp_c_headliner * 9.0 / 5.0 + 32.0
-
-x = round(axes[0],3)
-y = round(axes[1],3)
-z = round(axes[2],3)
-
 ##  thread to collect gpsd info
 class GpsPoller(threading.Thread):
 
@@ -113,23 +99,25 @@ class GpsPoller(threading.Thread):
      gpsd.next()
     sleep(10)
 
-print 'temp (cpu)' , temp_cpu, 'c'
-print 'temp (uncalibrated) ', temp_raw, 'c'
-print 'temp (calibrated) ', temp, 'c'
-print 'temp (ds18b20) ', temp_c_headliner, 'c'
-print 'pressure ', pressure, 'hPa'
-print 'light level ', light
-print 'heading ' , heading
-print 'stance ' , axes
-print 'x (roll) ', x
-print 'y (pitch) ', y
-print 'z (yaw) ', z
-
 try:
     while True:
         gpsd.next()
         os.system('clear')
-        print ## print section to be removed in production
+        temp_cpu = get_cpu_temperature()
+        temp_raw = round(weather.temperature(),2)
+        temp = round(read_enviro_temp(),2)
+        heading = read_enviro_heading()
+        axes = read_enviro_accelerometer()
+        pressure = round(read_enviro_pressure(),1)
+        rainchancepercentage = rainchance(pressure)
+        e_light = read_enviro_light()
+        temp_c_headliner = round(read_temp_headliner(),2)
+        temp_f_headliner = temp_c_headliner * 9.0 / 5.0 + 32.0
+        x = round(axes[0],3)
+        y = round(axes[1],3)
+        z = round(axes[2],3)
+
+        print				## "print" section to be removed for production
         print ' GPS reading'
         print '----------------------------------------'
         print 'latitude ' , gpsd.fix.latitude
@@ -189,7 +177,7 @@ try:
         streamer.log("enviro temperature(C) calibrated", temp)
         streamer.log("headliner temperature(C)", temp_c_headliner)
         streamer.log("enviro pressure(hPa)" , pressure)
-        streamer.log("chance of rain(%)" , rainchance)
+        streamer.log("chance of rain(%)" , rainchancepercentage)
         streamer.log("enviro light intensity" , light)
         streamer.log("enviro heading" , heading)
         streamer.log("enviro accelerometer 3-axis" , axes)
@@ -207,5 +195,5 @@ except GeocoderTimedOut as e:
 except (KeyboardInterrupt, SystemExit):         # pressing ctrl+c
         print "\nKilling Thread..."
 
-if __name__ == "__main__":
-    main()
+#if __name__ == "__main__":
+#    main()
