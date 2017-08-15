@@ -39,6 +39,6 @@ C = 0.4 * 24
 C = 9.6 amp hours
 Required minimal 9600 mAh to run for 24h
 
-Muiltple files fo multiple goals:
+Muiltple files for multiple goals:
 - stream to Initial State --> vegasmonitor-streamer.py-example
 - stream to Cayenne --> vegasmonitor-mqtt.py-example
