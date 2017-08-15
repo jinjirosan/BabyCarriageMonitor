@@ -9,7 +9,9 @@ The code will also livestream to an InitialState bucket instead of my own monito
 many 'normal' people have build in their home ...)
 
 ![dashboard example](https://github.com/jinjirosan/BabyCarriageMonitor/blob/master/images/initialstate-dashboard.png)
+--> image: Dashboard example proessing the data
 ![device](https://github.com/jinjirosan/BabyCarriageMonitor/blob/master/images/stokkezerobuild.jpg)
+--> image: The device itself, with the active antenna in teh bak and the ds18b20 temperature sensor on the right
 
 The following sensor inputs are used:
 
