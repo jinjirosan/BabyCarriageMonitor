@@ -9,6 +9,7 @@ The code will also livestream to an InitialState bucket instead of my own monito
 many 'normal' people have build in their home ...)
 
 ![dashboard example](https://github.com/jinjirosan/BabyCarriageMonitor/blob/master/images/initialstate-dashboard.png)
+![device](https://github.com/jinjirosan/BabyCarriageMonitor/blob/master/images/stokkezerobuild.jpg)
 
 The following sensor inputs are used:
 
