@@ -20,6 +20,13 @@ from bisect import bisect_left                                 ## for chance of 
 geolocator=Nominatim()
 gpsd = gps(mode=WATCH_ENABLE)
 
+## maybe resolve --> UnicodeEncodeError: 'ascii' codec can't encode character u'\xeb' in position 16: ordinal not in range(128)
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+## resolved systemd log --> stokkezero python[31114]: TERM environment variable not set.
+os.environ["TERM"] = "xterm-256color"
+
 ## designate bucket name and individual access_key, dataset will append to existing bucket
 streamer=Streamer(bucket_name="stokkezeroGPSDATA",bucket_key="<insert bucket key here>", access_key="<insert API key here>")
 
