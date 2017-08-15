@@ -17,7 +17,7 @@ The following sensor inputs are used:
 | ------------- |:-------------:| -----:|
 | temperature (pi)     | tempenviro = round(weather.temperature(),2) |  |
 | temperature (enviro)     |       |   |
-| temperature (ds18 sensor headliner)	 |      |    |
+| temperature (ds18b20 sensor headliner)	 |      |    |
 | pressure | pressureenviro = round(weather.pressure(),2)      |   |
 | heading (enviro motion) | headingenviro = motion.heading()      |   |
 | light (intensity, dark-bright) | lightenviro = light.light()      |  |
