@@ -5,7 +5,10 @@ This is actually the second version of this project. The previous build is compl
 
 This project is trying to move to a smaller Pi Zero-W with one external temp sensor (ds18b20),the EnviroPHAT and the Adafruit Ultimate GPS v3. Possibly also integrate with the LiPo board as well for better power supply. 
 
-The code will also livestream to an InitialState bucket instead of my own monitoring platform at home (which I'd guess not many 'normal' people have build in their home ...)
+The code will also livestream to an InitialState bucket instead of my own monitoring platform at home (which I'd guess not 
+many 'normal' people have build in their home ...)
+
+![dashboard example](https://github.com/jinjirosan/BabyCarriageMonitor/images/initialstate-dashboard.png)
 
 The following sensor inputs are used:
 
