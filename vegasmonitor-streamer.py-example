@@ -50,9 +50,8 @@ def get_cpu_temperature():
 def read_enviro_temp():
     temp_raw = round(weather.temperature(),2)
     temp_cpu = get_cpu_temperature()
-    temp_calibrated = temp_raw - ((temp_cpu - temp_raw)/1.2)
+    temp_calibrated = temp_raw - ((temp_cpu - temp_raw)/0.7)     ## open air correction value 1.2 , in stokke 0.7
     return temp_calibrated
-#     return round(weather.temperature(),2)
 
 def read_enviro_heading():
     corr_heading = (motion.heading() - 10) % 360        ## verify North correction , 10 is a placeholder
@@ -128,10 +127,10 @@ if __name__ == '__main__':
           y = round(axes[1],1)*100+70         ## round to one decimal place, multiply by 100 for degrees
           z = round(axes[2],1)*100+60
 
-          ## the geolocator requires a string so we turn lat and long into one
+          ## translate the latitude and longitude into one string for the geolocator
           coordinates = str(gpsd.fix.latitude) + "," + str(gpsd.fix.longitude)
   
-          ## stream whatever you'd like to collect from the gps
+          ## Sending the data to initial state
           streamer.log("Coordinates",coordinates)
           streamer.log("Reported Time",gpsd.utc,gpsd.fix.time)
           streamer.log("Altitude (m)",gpsd.fix.altitude)
@@ -166,16 +165,15 @@ if __name__ == '__main__':
           mem = psutil.virtual_memory()
           mem_percent_used = mem.percent
           streamer.log("Memory Used(%)",str("{0:.2f}".format(mem_percent_used)))
-          def nocoords():
-              if coordinates != "0.0,0.0": 
-                  location=geolocator.reverse(coordinates,timeout=10) ## reverse geocode coordinates
-                  streamer.log("Location",location.address)
-              if coordinates == "0.0,0.0":
-                  location = 'no location data'
-                  streamer.log("Location",location.address) 
-                  #pass
-              return
+          
           time.sleep(5)
+          ## evaluate if the GPS has a fix and coords, if not the geolocator barfs so send string
+          if coordinates == "nan,nan": 
+               noaddress = "no location data - no gps coords - probably indoors"
+               streamer.log("Location",noaddress) 
+          else: #coordinates == "0.0,0.0":
+               location=geolocator.reverse(coordinates,timeout=10) ## reverse geocode coordinates
+               streamer.log("Location",location.address)
           ## if the geocoder times out, stream a message and keep looping
   except GeocoderTimedOut as e:
           streamer.log("msg","Geocoder Timeout")
