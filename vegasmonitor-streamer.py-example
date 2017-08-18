@@ -9,6 +9,7 @@ import time                                                    ## import time fo
 import threading                                               ## import threading
 import traceback                                               ## import traceback for exception handling
 import glob                                                    ## used for pathnames pattern matching
+import psutil                                                  ## used for system monitoring
 from gps import *                                              ## import the gps module
 from subprocess import PIPE, Popen
 from envirophat import light, weather, motion, analog
@@ -49,7 +50,7 @@ def get_cpu_temperature():
 def read_enviro_temp():
     temp_raw = round(weather.temperature(),2)
     temp_cpu = get_cpu_temperature()
-    temp_calibrated = temp_raw - ((temp_cpu - temp_raw)/1.9)
+    temp_calibrated = temp_raw - ((temp_cpu - temp_raw)/1.2)
     return temp_calibrated
 #     return round(weather.temperature(),2)
 
@@ -123,16 +124,16 @@ if __name__ == '__main__':
           e_light = read_enviro_light()
           temp_c_headliner = round(read_temp_headliner(),2)
           temp_f_headliner = temp_c_headliner * 9.0 / 5.0 + 32.0
-          x = round(axes[0],1)*100
-          y = round(axes[1],1)*100         ## round to one decimal place, multiply by 100 for degrees
-          z = round(axes[2],1)*100
+          x = round(axes[0],1)*100-40         ## correction values at the end to compensate mounting position
+          y = round(axes[1],1)*100+70         ## round to one decimal place, multiply by 100 for degrees
+          z = round(axes[2],1)*100+60
 
           ## the geolocator requires a string so we turn lat and long into one
           coordinates = str(gpsd.fix.latitude) + "," + str(gpsd.fix.longitude)
   
           ## stream whatever you'd like to collect from the gps
           streamer.log("Coordinates",coordinates)
-          streamer.log("Reported Time",gpsd.utc,)
+          streamer.log("Reported Time",gpsd.utc,gpsd.fix.time)
           streamer.log("Altitude (m)",gpsd.fix.altitude)
           streamer.log("Climb (m/s)",gpsd.fix.climb)
           streamer.log("Lat Error",gpsd.fix.epy)
@@ -140,9 +141,6 @@ if __name__ == '__main__':
           streamer.log("Timestamp Error",gpsd.fix.ept)
           streamer.log("Speed (m/s)",gpsd.fix.speed)
           streamer.log("Speed Error",gpsd.fix.eps)
-
-          location=geolocator.reverse(coordinates,timeout=10) ## reverse geocode coordinates
-          streamer.log("Location",location.address)
 
           streamer.log("headliner temperature(C)", temp_c_headliner)
           streamer.log("headliner temperature(F)", temp_f_headliner)
@@ -159,6 +157,24 @@ if __name__ == '__main__':
           streamer.log("enviro accelerometer Y (pitch)" ,y)
           streamer.log("enviro accelerometer Z (yaw)" , z)
 
+          ## system monitoring
+          disk = psutil.disk_usage('/')
+          cpu_percent = psutil.cpu_percent(percpu=False)
+          streamer.log("CPU Usage",cpu_percent)
+          disk_percent_used = disk.percent
+          streamer.log("Disk Used(%)",str("{0:.2f}".format(disk_percent_used)))
+          mem = psutil.virtual_memory()
+          mem_percent_used = mem.percent
+          streamer.log("Memory Used(%)",str("{0:.2f}".format(mem_percent_used)))
+          def nocoords():
+              if coordinates != "0.0,0.0": 
+                  location=geolocator.reverse(coordinates,timeout=10) ## reverse geocode coordinates
+                  streamer.log("Location",location.address)
+              if coordinates == "0.0,0.0":
+                  location = 'no location data'
+                  streamer.log("Location",location.address) 
+                  #pass
+              return
           time.sleep(5)
           ## if the geocoder times out, stream a message and keep looping
   except GeocoderTimedOut as e:
