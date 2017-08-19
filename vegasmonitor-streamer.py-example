@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # Maintainer 	: JinjiroSan
-# Version	: vegasmonitor 2.0 - initialstate_streamer - rewrite 3.0
+# Version	: vegasmonitor 2.0 - initialstate_streamer - rewrite 3.1
 
 import os                                                      ## system terminal access
 import sys                                                     ## for the exit routine
@@ -22,7 +22,7 @@ from bisect import bisect_left                                 ## for chance of 
 geolocator=Nominatim()
 gpsd = gps(mode=WATCH_ENABLE)
 
-## maybe resolve --> UnicodeEncodeError: 'ascii' codec can't encode character u'\xeb' in position 16: ordinal not in range(128)
+## resolved --> UnicodeEncodeError: 'ascii' codec can't encode character u'\xeb' in position 16: ordinal not in range(128)
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -48,6 +48,7 @@ raintable = {0:80, 994:70, 998:60, 1002:50, 1007:40, 1011:30, 1016:20, 1020:10}
 thingid = 'vegasmonitor_2_0_stokke'
 mydweet = {}
 
+## function galore
 def get_cpu_temperature():
     process = Popen(['vcgencmd', 'measure_temp'], stdout=PIPE)
     output, _error = process.communicate()
@@ -103,8 +104,8 @@ class GpsPoller(threading.Thread):
  def __init__(self):
     threading.Thread.__init__(self)
     global gpsd                         ## bring gpsd in scope
-    gpsd = gps(mode=WATCH_ENABLE)       ## starting the stream of info
-    self.current_value = None
+    gpsd = gps(mode=WATCH_ENABLE)       ## start the stream of info
+    self.current_value = None           ## clear
     self.running = True                 ## setting the thread running to true for the loop
 
  def run(self):
@@ -113,11 +114,11 @@ class GpsPoller(threading.Thread):
      gpsd.next()
 
 if __name__ == '__main__':
-  gpsp = GpsPoller() ## create the thread
+  gpsp = GpsPoller()                    ## create the thread
   try:
-      gpsp.start()   ## start
-      mydweet = {}   ## clear any old data
-      mydweet['sender'] = 'stokkezero'
+      gpsp.start()                      ## start
+      mydweet = {}                      ## clear any old data in dweet.io table
+      mydweet['sender'] = 'stokkezero'  ## add identifier
       while True:
           gpsd.next()
           os.system('clear')
@@ -140,8 +141,12 @@ if __name__ == '__main__':
   
           ## Sending the data to initial state and preload dweet.io table
           streamer.log("Coordinates",coordinates)
-          mydweet['latitude'] = gpsd.fix.latitude
-          mydweet['longitude'] = gpsd.fix.longitude
+          if coordinates == "nan,nan":        ## dweet barfs on non-existing coords, so make sure values are numerical
+              mydweet['latitude'] = 0
+              mydweet['longitude'] = 0
+          else:
+              mydweet['latitude'] = gpsd.fix.latitude
+              mydweet['longitude'] = gpsd.fix.longitude
           streamer.log("Reported Time",gpsd.utc,gpsd.fix.time)
           streamer.log("Altitude (m)",gpsd.fix.altitude)
           streamer.log("Climb (m/s)",gpsd.fix.climb)
@@ -181,21 +186,25 @@ if __name__ == '__main__':
           
           ## send table to dweet.io
           dweepy.dweet_for(thingid, mydweet);
-
+          #print mydweet
+          
           time.sleep(5)
           ## evaluate if the GPS has a fix and coords, if not the geolocator barfs so send string
           if coordinates == "nan,nan": 
                noaddress = "no location data - no gps coords - probably indoors"
                streamer.log("Location",noaddress) 
-          else: #coordinates == "0.0,0.0":
+          elif coordinates == "0.0,0.0": 
+               noaddress = "no location data - no gps coords - probably indoors"
+               streamer.log("Location",noaddress) 
+          else:
                location=geolocator.reverse(coordinates,timeout=10) ## reverse geocode coordinates
                streamer.log("Location",location.address)
-          ## if the geocoder times out, stream a message and keep looping
+  ## if the geocoder times out, stream a message and keep looping
   except GeocoderTimedOut as e:
           streamer.log("msg","Geocoder Timeout")
           pass
 
-##  user interupt or system exits by itself, print a message, close 
+  ## user interupt or system exits by itself, print a message, close 
   except (KeyboardInterrupt, SystemExit):         ## user interupt CTRL-C
           print "\nKilling Thread..."
           gpsp.running = False
