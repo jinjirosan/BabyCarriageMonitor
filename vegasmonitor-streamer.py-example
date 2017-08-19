@@ -163,7 +163,6 @@ if __name__ == '__main__':
           streamer.log("enviro light intensity" , e_light)
           streamer.log("enviro heading" , heading)
           mydweet['heading'] = heading
-#          streamer.log("enviro accelerometer 3-axis" , axes)
           streamer.log("enviro accelerometer X (roll)" , x)
           mydweet['roll'] = x
           streamer.log("enviro accelerometer Y (pitch)" , y)
