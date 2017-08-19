@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # Maintainer 	: JinjiroSan
-# Version	: vegasmonitor 2.0 - initialstate_streamer
+# Version	: vegasmonitor 2.0 - initialstate_streamer - rewrite 3.0
 
 import os                                                      ## system terminal access
 import sys                                                     ## for the exit routine
@@ -10,12 +10,13 @@ import threading                                               ## import threadi
 import traceback                                               ## import traceback for exception handling
 import glob                                                    ## used for pathnames pattern matching
 import psutil                                                  ## used for system monitoring
+import dweepy                                                  ## for alerting to dweet.io
 from gps import *                                              ## import the gps module
-from subprocess import PIPE, Popen
-from envirophat import light, weather, motion, analog
-from ISStreamer.Streamer import Streamer
-from geopy.geocoders import Nominatim
-from geopy.exc import GeocoderTimedOut
+from subprocess import PIPE, Popen                             ## to get the cpu temp from file
+from envirophat import light, weather, motion, analog          ## the meat and potato of sensors
+from ISStreamer.Streamer import Streamer                       ## getting stuff to initial state
+from geopy.geocoders import Nominatim                          ## for physical address translation
+from geopy.exc import GeocoderTimedOut                         ## geo error handling
 from bisect import bisect_left                                 ## for chance of rain from pressure value
 
 geolocator=Nominatim()
@@ -40,7 +41,12 @@ os.system('modprobe w1-therm')
 #base_dir_front = '/sys/bus/w1/devices/28-041658f324ff/w1_slave'
 base_dir_headliner = '/sys/bus/w1/devices/28-041658f014ff/w1_slave'
 
+## KNMI historical pressure-rainchance data
 raintable = {0:80, 994:70, 998:60, 1002:50, 1007:40, 1011:30, 1016:20, 1020:10}
+
+## dweet.io parameters
+thingid = 'vegasmonitor_2_0_stokke'
+mydweet = {}
 
 def get_cpu_temperature():
     process = Popen(['vcgencmd', 'measure_temp'], stdout=PIPE)
@@ -107,9 +113,11 @@ class GpsPoller(threading.Thread):
      gpsd.next()
 
 if __name__ == '__main__':
-  gpsp = GpsPoller() # create the thread
+  gpsp = GpsPoller() ## create the thread
   try:
-      gpsp.start()   # start
+      gpsp.start()   ## start
+      mydweet = {}   ## clear any old data
+      mydweet['sender'] = 'stokkezero'
       while True:
           gpsd.next()
           os.system('clear')
@@ -130,8 +138,10 @@ if __name__ == '__main__':
           ## translate the latitude and longitude into one string for the geolocator
           coordinates = str(gpsd.fix.latitude) + "," + str(gpsd.fix.longitude)
   
-          ## Sending the data to initial state
+          ## Sending the data to initial state and preload dweet.io table
           streamer.log("Coordinates",coordinates)
+          mydweet['latitude'] = gpsd.fix.latitude
+          mydweet['longitude'] = gpsd.fix.longitude
           streamer.log("Reported Time",gpsd.utc,gpsd.fix.time)
           streamer.log("Altitude (m)",gpsd.fix.altitude)
           streamer.log("Climb (m/s)",gpsd.fix.climb)
@@ -142,18 +152,22 @@ if __name__ == '__main__':
           streamer.log("Speed Error",gpsd.fix.eps)
 
           streamer.log("headliner temperature(C)", temp_c_headliner)
+          mydweet['headliner temperature'] = temp_c_headliner
           streamer.log("headliner temperature(F)", temp_f_headliner)
           streamer.log("rpi temperature(C)", temp_cpu)
           streamer.log("enviro temperature(C) uncalibrated", temp_raw)
           streamer.log("enviro temperature(C) calibrated", temp)
-          streamer.log("headliner temperature(C)", temp_c_headliner)
           streamer.log("enviro pressure(hPa)" , pressure)
           streamer.log("chance of rain(%)" , rainchancepercentage)
+          mydweet['rainchance'] = rainchancepercentage
           streamer.log("enviro light intensity" , e_light)
           streamer.log("enviro heading" , heading)
+          mydweet['heading'] = heading
 #          streamer.log("enviro accelerometer 3-axis" , axes)
           streamer.log("enviro accelerometer X (roll)" , x)
-          streamer.log("enviro accelerometer Y (pitch)" ,y)
+          mydweet['roll'] = x
+          streamer.log("enviro accelerometer Y (pitch)" , y)
+          mydweet['pitch'] = y
           streamer.log("enviro accelerometer Z (yaw)" , z)
 
           ## system monitoring
@@ -166,6 +180,9 @@ if __name__ == '__main__':
           mem_percent_used = mem.percent
           streamer.log("Memory Used(%)",str("{0:.2f}".format(mem_percent_used)))
           
+          ## send table to dweet.io
+          dweepy.dweet_for(thingid, mydweet);
+
           time.sleep(5)
           ## evaluate if the GPS has a fix and coords, if not the geolocator barfs so send string
           if coordinates == "nan,nan": 
