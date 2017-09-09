@@ -1,7 +1,7 @@
 # /usr/bin/env python
 #
 # Maintainer 	: JinjiroSan
-# Version	: vegasmonitor 2.0 - initialstate_streamer - rewrite 3.2
+# Version	: vegasmonitor 2.0 - initialstate_streamer - rewrite 3.2.1
 
 import os                                                      ## system terminal access
 import sys                                                     ## for the exit routine
@@ -139,7 +139,7 @@ if __name__ == '__main__':
 
           ## translate the latitude and longitude into one string for the geolocator
           coordinates = str(gpsd.fix.latitude) + "," + str(gpsd.fix.longitude)
-  
+
           ## Sending the data to initial state and populate dweet.io table
           streamer.log("Coordinates",coordinates)
           if coordinates == "nan,nan":        ## dweet barfs on non-existing coords, so make sure values are numerical
@@ -159,13 +159,13 @@ if __name__ == '__main__':
           #streamer.log("# satellites", session.satellites)
           mydweet['number of satellites'] = session.satellites
           if gpsd.fix.mode == 1:
-              streamer.log("GPS state", "no sats") 
+              streamer.log("GPS state", "no sats")
               mydweet['GPS state'] = "no sats"
           elif gpsd.fix.mode == 2:
-              streamer.log("GPS state", "2D fix") 
+              streamer.log("GPS state", "2D fix")
               mydweet['GPS state'] = "2D fix - no altitude"
           else:
-              streamer.log("GPS state", "3D fix") 
+              streamer.log("GPS state", "3D fix")
               mydweet['GPS state'] = "3D fix"
           mydweet['GPS mode'] = gpsd.fix.mode
           streamer.log("headliner temperature(C)", temp_c_headliner)
@@ -195,18 +195,18 @@ if __name__ == '__main__':
           mem = psutil.virtual_memory()
           mem_percent_used = mem.percent
           streamer.log("Memory Used(%)",str("{0:.2f}".format(mem_percent_used)))
-          
+
           ## send table to dweet.io
           dweepy.dweet_for(thingid, mydweet);
-          
+
           time.sleep(5)
           ## evaluate if the GPS has a fix and coords, if not the geolocator barfs so send string
-          if coordinates == "nan,nan": 
+          if coordinates == "nan,nan":
                noaddress = "no location data - no gps coords - probably indoors"
-               streamer.log("Location",noaddress) 
-          elif coordinates == "0.0,0.0": 
+               streamer.log("Location",noaddress)
+          elif coordinates == "0.0,0.0":
                noaddress = "no location data - no gps coords - probably indoors"
-               streamer.log("Location",noaddress) 
+               streamer.log("Location",noaddress)
           else:
                location=geolocator.reverse(coordinates,timeout=10) ## reverse geocode coordinates
                streamer.log("Location",location.address)
@@ -215,7 +215,7 @@ if __name__ == '__main__':
           streamer.log("msg","Geocoder Timeout")
           pass
 
-  ## user interupt or system exits by itself, print a message, close 
+  ## user interupt or system exits by itself, print a message, close
   except (KeyboardInterrupt, SystemExit):         ## user interupt CTRL-C
           print "\nKilling Thread..."
           gpsp.running = False
