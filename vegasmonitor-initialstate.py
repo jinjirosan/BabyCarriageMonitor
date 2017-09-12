@@ -1,7 +1,7 @@
 # /usr/bin/env python
 #
 # Maintainer 	: JinjiroSan
-# Version	: vegasmonitor 2.0 - initialstate_streamer - rewrite 3.2.3 (pep8 revision )
+# Version	: vegasmonitor 2.0 - initialstate_streamer - rewrite 3.2.3-REFACTOR (pep8 revision )
 
 import os                                                      ## system terminal access
 import sys                                                     ## for the exit routine
