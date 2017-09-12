@@ -1,7 +1,7 @@
 # /usr/bin/env python
 #
 # Maintainer 	: JinjiroSan
-# Version	: vegasmonitor 2.0 - initialstate_streamer - rewrite 3.2.3-REFACTOR (pep8 revision )
+# Version	: vegasmonitor 2.0 - initialstate_streamer - rewrite 3.2.3-REFACTOR 0.2
 
 import os                                                      ## system terminal access
 import sys                                                     ## for the exit routine
@@ -114,7 +114,7 @@ class GpsPoller(threading.Thread):
         while gpsp.running:
             gpsd.next()
 
-if __name__ == '__main__':
+def main():
     gpsp = GpsPoller()                    ## create the thread
     try:
         gpsp.start()                      ## start and storing data in self.current_value
@@ -197,7 +197,7 @@ if __name__ == '__main__':
             streamer.log("Memory Used(%)", str("{0:.2f}".format(mem_percent_used)))
 
             ## send table to dweet.io
-            dweepy.dweet_for(thingid, mydweet);
+            dweepy.dweet_for(thingid, mydweet)  ## removed semicolon from end due to pep8, see if this correct.
 
             time.sleep(5)
             ## evaluate if the GPS has a fix and coords, if not the geolocator barfs so send string
@@ -221,3 +221,6 @@ if __name__ == '__main__':
         gpsp.running = False
         gpsp.join()                             ## wait for the thread to finish what it's doing
         print "Done.\nExiting."
+
+if __name__ == '__main__':
+    main()
