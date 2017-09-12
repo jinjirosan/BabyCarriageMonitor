@@ -1,7 +1,7 @@
 # /usr/bin/env python
 #
 # Maintainer 	: JinjiroSan
-# Version	: vegasmonitor 2.0 - initialstate_streamer - rewrite 3.2.2 (pep8 revision )
+# Version	: vegasmonitor 2.0 - initialstate_streamer - rewrite 3.2.3 (pep8 revision )
 
 import os                                                      ## system terminal access
 import sys                                                     ## for the exit routine
@@ -102,17 +102,17 @@ def read_temp_headliner():
 ##  thread to collect gpsd info
 class GpsPoller(threading.Thread):
 
-def __init__(self):
-    threading.Thread.__init__(self)
-    global gpsd                         ## bring gpsd in scope
-    gpsd = gps(mode=WATCH_ENABLE)       ## start the stream of info
-    self.current_value = None           ## clear
-    self.running = True                 ## setting the thread running to true for the loop
+    def __init__(self):
+        threading.Thread.__init__(self)
+        global gpsd                         ## bring gpsd in scope
+        gpsd = gps(mode=WATCH_ENABLE)       ## start the stream of info
+        self.current_value = None           ## clear
+        self.running = True                 ## setting the thread running to true for the loop
 
-def run(self):
-    global gpsd
-    while gpsp.running:
-        gpsd.next()
+    def run(self):
+        global gpsd
+        while gpsp.running:
+            gpsd.next()
 
 if __name__ == '__main__':
     gpsp = GpsPoller()                    ## create the thread
