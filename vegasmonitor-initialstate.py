@@ -31,7 +31,7 @@ sys.setdefaultencoding('utf-8')
 ## resolved systemd log --> stokkezero python[31114]: TERM environment variable not set.
 os.environ["TERM"] = "xterm-256color"
 
-## designate bucket name and individual access_key, dataset will append to existing bucket
+## designate bucket name and individual access_key, dataset will append to existing bucket. External file (vegasconfig) for keys.
 streamer = Streamer(bucket_name=vegasconfig.bucket_name, bucket_key=vegasconfig.bucket_key, access_key=vegasconfig.access_key)
 
 ## modprobes for ds18b20 temp sensor
@@ -71,33 +71,47 @@ def read_enviro_accelerometer():
     axes = motion.accelerometer()
     return axes
 
-def read_enviro_pressure():
-    e_pressure = round(weather.pressure(), 2)
-    return e_pressure * 0.01
+class weatherdata():
 
-def rainchance(pressure):
-    return raintable[max({k: raintable[k] for k in raintable if k < read_enviro_pressure()})]
+    def read_temp_raw_headliner(self):
+        f_headliner = open(base_dir_headliner, 'r')
+        lines_headliner = f_headliner.readlines()
+        f_headliner.close()
+        return lines_headliner
 
-def read_enviro_light():
-    e_light = light.light()
-    return e_light
+    def read_temp_headliner(self):
+        lines_headliner = self.read_temp_raw_headliner()
+        while lines_headliner[0].strip()[-3:] != 'YES':
+            time.sleep(0.2)
+            lines_headliner = self.read_temp_raw_headliner()
+        equals_pos = lines_headliner[1].find('t=')
+        if equals_pos != -1:
+            temp_string_headliner = lines_headliner[1][equals_pos + 2:]
+            temp_c_headliner = float(temp_string_headliner) / 1000.0
+            return temp_c_headliner
 
-def read_temp_raw_headliner():
-    f_headliner = open(base_dir_headliner, 'r')
-    lines_headliner = f_headliner.readlines()
-    f_headliner.close()
-    return lines_headliner
+    def read_enviro_pressure(self):
+        e_pressure = round(weather.pressure(), 2)
+        return e_pressure * 0.01
 
-def read_temp_headliner():
-    lines_headliner = read_temp_raw_headliner()
-    while lines_headliner[0].strip()[-3:] != 'YES':
-        time.sleep(0.2)
-        lines_headliner = read_temp_raw_headliner()
-    equals_pos = lines_headliner[1].find('t=')
-    if equals_pos != -1:
-        temp_string_headliner = lines_headliner[1][equals_pos + 2:]
-        temp_c_headliner = float(temp_string_headliner) / 1000.0
-        return temp_c_headliner
+    def rainchance(self, pressure):
+        return raintable[max({k: raintable[k] for k in raintable if k < read_enviro_pressure()})]
+
+    def read_enviro_light(self):
+        e_light = light.light()
+        return e_light
+
+def collect_env_data():
+    dict_env_data = {'Name': name1, 'Age': age1, 'Class': 'First', 'Region': region, 'Temperature Celcius': temp}
+    return
+
+class transmit():
+
+    def send_to_dweet():
+        return
+
+    def send_to_initialstate():
+        return
 
 ##  thread to collect gpsd info
 class GpsPoller(threading.Thread):
