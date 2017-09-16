@@ -1,7 +1,7 @@
 # /usr/bin/env python
 #
 # Maintainer 	: JinjiroSan
-# Version	: vegasmonitor 2.0 - initialstate_streamer - rewrite 3.2.3-REFACTOR 0.2
+# Version	: vegasmonitor 2.0 - initialstate_streamer - rewrite 3.2.3-REFACTOR 0.4
 
 import os                                                      ## system terminal access
 import sys                                                     ## for the exit routine
@@ -43,9 +43,6 @@ os.system('modprobe w1-therm')
 # base_dir_front = '/sys/bus/w1/devices/28-041658f324ff/w1_slave'
 base_dir_headliner = '/sys/bus/w1/devices/28-041658f014ff/w1_slave'
 
-## KNMI historical pressure-rainchance data
-raintable = {0: 80, 994: 70, 998: 60, 1002: 50, 1007: 40, 1011: 30, 1016: 20, 1020: 10}
-
 ## dweet.io parameters
 thingid = 'vegasmonitor_2_0_stokke'
 mydweet = {}
@@ -72,6 +69,9 @@ def read_enviro_accelerometer():
     return axes
 
 class weatherdata():
+    def __init__(self):
+        ## KNMI historical pressure-rainchance data
+        self.raintable = {0: 80, 994: 70, 998: 60, 1002: 50, 1007: 40, 1011: 30, 1016: 20, 1020: 10}
 
     def read_temp_raw_headliner(self):
         f_headliner = open(base_dir_headliner, 'r')
@@ -95,13 +95,13 @@ class weatherdata():
         return e_pressure * 0.01
 
     def rainchance(self, pressure):
-        return raintable[max({k: raintable[k] for k in raintable if k < read_enviro_pressure()})]
+        return self.raintable[max({k: self.raintable[k] for k in self.raintable if k < read_enviro_pressure()})]
 
     def read_enviro_light(self):
         e_light = light.light()
         return e_light
 
-def collect_env_data():
+def collect_env_data():         ## dict must contain all the sanatized clean data to transmit
     dict_env_data = {'Name': name1, 'Age': age1, 'Class': 'First', 'Region': region, 'Temperature Celcius': temp}
     return
 
