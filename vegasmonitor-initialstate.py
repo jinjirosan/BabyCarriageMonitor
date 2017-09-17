@@ -1,7 +1,7 @@
 # /usr/bin/env python
 #
 # Maintainer 	: JinjiroSan
-# Version	: vegasmonitor 2.0 - initialstate_streamer - rewrite 3.2.3-REFACTOR 0.5
+# Version	: vegasmonitor 2.0 - initialstate_streamer - rewrite 3.2.3-REFACTOR 0.6
 
 import os                                                      ## system terminal access
 import sys                                                     ## for the exit routine
@@ -102,7 +102,20 @@ class weatherdata():
         return e_light
 
 def collect_env_data():         ## dict must contain all the sanatized clean data to transmit
-    dict_env_data = {'Name': name1, 'Age': age1, 'Class': 'First', 'Region': region, 'Temperature Celcius': temp}
+    temp_cpu = get_cpu_temperature()
+    temp_raw = round(weather.temperature(), 2)
+    temp = round(read_enviro_temp(), 2)
+    heading = round(read_enviro_heading(), 0)
+    axes = read_enviro_accelerometer()
+    pressure = round(read_enviro_pressure(), 1)
+    rainchancepercentage = rainchance(pressure)
+    e_light = read_enviro_light()
+    temp_c_headliner = round(read_temp_headliner(), 2)
+    temp_f_headliner = temp_c_headliner * 9.0 / 5.0 + 32.0
+    x = round(axes[0], 1) * 100 - 40         ## correction values at the end to compensate mounting position
+    y = round(axes[1], 1) * 100 + 70         ## round to one decimal place, multiply by 100 for degrees
+    z = round(axes[2], 1) * 100 + 60
+    dict_env_data = {'rpi temperature(C)': temp_cpu, 'enviro temperature(C) uncalibrated': temp_raw, 'enviro temperature(C) calibrated': temp, 'enviro heading': heading, 'enviro accelerometer X (roll)': x, 'enviro accelerometer Y (pitch)': y, 'enviro accelerometer Z (yaw)': z, 'enviro pressure(hPa)': pressure, 'chance of rain(%)': rainchancepercentage, 'enviro light intensity': e_light, }
     return
 
 class transmit():
@@ -110,6 +123,8 @@ class transmit():
     def send_to_dweet():
         mydweet = {}                      ## clear any old data in dweet.io table
         mydweet['sender'] = 'stokkezero'  ## add identifier
+        ## send table to dweet.io
+        dweepy.dweet_for(thingid, dict_env_data)  ## removed semicolon from end due to pep8, see if this correct.
         return
 
     def send_to_initialstate():
@@ -137,19 +152,6 @@ def main():
         while True:
             gpsd.next()
             os.system('clear')
-            temp_cpu = get_cpu_temperature()
-            temp_raw = round(weather.temperature(), 2)
-            temp = round(read_enviro_temp(), 2)
-            heading = round(read_enviro_heading(), 0)
-            axes = read_enviro_accelerometer()
-            pressure = round(read_enviro_pressure(), 1)
-            rainchancepercentage = rainchance(pressure)
-            e_light = read_enviro_light()
-            temp_c_headliner = round(read_temp_headliner(), 2)
-            temp_f_headliner = temp_c_headliner * 9.0 / 5.0 + 32.0
-            x = round(axes[0], 1) * 100 - 40         ## correction values at the end to compensate mounting position
-            y = round(axes[1], 1) * 100 + 70         ## round to one decimal place, multiply by 100 for degrees
-            z = round(axes[2], 1) * 100 + 60
 
             ## translate the latitude and longitude into one string for the geolocator
             coordinates = str(gpsd.fix.latitude) + "," + str(gpsd.fix.longitude)
@@ -209,9 +211,6 @@ def main():
             mem = psutil.virtual_memory()
             mem_percent_used = mem.percent
             streamer.log("Memory Used(%)", str("{0:.2f}".format(mem_percent_used)))
-
-            ## send table to dweet.io
-            dweepy.dweet_for(thingid, mydweet)  ## removed semicolon from end due to pep8, see if this correct.
 
             time.sleep(5)
             ## evaluate if the GPS has a fix and coords, if not the geolocator barfs so send string
