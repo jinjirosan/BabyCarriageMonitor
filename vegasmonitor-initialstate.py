@@ -1,7 +1,7 @@
 # /usr/bin/env python
 #
 # Maintainer 	: JinjiroSan
-# Version	: vegasmonitor 2.0 - initialstate_streamer - rewrite 3.2.3-REFACTOR 0.4
+# Version	: vegasmonitor 2.0 - initialstate_streamer - rewrite 3.2.3-REFACTOR 0.5
 
 import os                                                      ## system terminal access
 import sys                                                     ## for the exit routine
@@ -108,6 +108,8 @@ def collect_env_data():         ## dict must contain all the sanatized clean dat
 class transmit():
 
     def send_to_dweet():
+        mydweet = {}                      ## clear any old data in dweet.io table
+        mydweet['sender'] = 'stokkezero'  ## add identifier
         return
 
     def send_to_initialstate():
@@ -132,8 +134,6 @@ def main():
     gpsp = GpsPoller()                    ## create the thread
     try:
         gpsp.start()                      ## start and storing data in self.current_value
-        mydweet = {}                      ## clear any old data in dweet.io table
-        mydweet['sender'] = 'stokkezero'  ## add identifier
         while True:
             gpsd.next()
             os.system('clear')
