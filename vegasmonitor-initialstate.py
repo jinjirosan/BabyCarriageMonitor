@@ -1,7 +1,7 @@
 # /usr/bin/env python
 #
 # Maintainer 	: JinjiroSan
-# Version	: vegasmonitor 2.0 - initialstate_streamer - rewrite 3.2.3-REFACTOR 0.6
+# Version	: vegasmonitor 2.0 - initialstate_streamer - rewrite 3.2.3-REFACTOR 0.7
 
 import os                                                      ## system terminal access
 import sys                                                     ## for the exit routine
@@ -48,10 +48,6 @@ thingid = 'vegasmonitor_2_0_stokke'
 mydweet = {}
 
 ## function galore
-def get_cpu_temperature():
-    process = Popen(['vcgencmd', 'measure_temp'], stdout=PIPE)
-    output, _error = process.communicate()
-    return float(output[output.index('=') + 1:output.rindex("'")])
 
 def read_enviro_temp():
     temp_raw = round(weather.temperature(), 2)
@@ -101,7 +97,22 @@ class weatherdata():
         e_light = light.light()
         return e_light
 
-def collect_env_data():         ## dict must contain all the sanatized clean data to transmit
+class sysmon():
+
+    def rpisystem():
+        disk = psutil.disk_usage('/')
+        cpu_percent = psutil.cpu_percent(percpu=False)
+        disk_percent_used = disk.percent
+        mem = psutil.virtual_memory()
+        mem_percent_used = mem.percent
+        return disk_percent_used, cpu_percent, mem_percent_used
+
+    def get_cpu_temperature():
+        process = Popen(['vcgencmd', 'measure_temp'], stdout=PIPE)
+        output, _error = process.communicate()
+        return float(output[output.index('=') + 1:output.rindex("'")])
+
+def collect_env_data():                     ## dict must contain all the sanatized clean data to transmit
     temp_cpu = get_cpu_temperature()
     temp_raw = round(weather.temperature(), 2)
     temp = round(read_enviro_temp(), 2)
@@ -115,7 +126,7 @@ def collect_env_data():         ## dict must contain all the sanatized clean dat
     x = round(axes[0], 1) * 100 - 40         ## correction values at the end to compensate mounting position
     y = round(axes[1], 1) * 100 + 70         ## round to one decimal place, multiply by 100 for degrees
     z = round(axes[2], 1) * 100 + 60
-    dict_env_data = {'rpi temperature(C)': temp_cpu, 'enviro temperature(C) uncalibrated': temp_raw, 'enviro temperature(C) calibrated': temp, 'enviro heading': heading, 'enviro accelerometer X (roll)': x, 'enviro accelerometer Y (pitch)': y, 'enviro accelerometer Z (yaw)': z, 'enviro pressure(hPa)': pressure, 'chance of rain(%)': rainchancepercentage, 'enviro light intensity': e_light, }
+    dict_env_data = {'rpi temperature(C)': temp_cpu, 'enviro temperature(C) uncalibrated': temp_raw, 'enviro temperature(C) calibrated': temp, 'enviro heading': heading, 'enviro accelerometer X (roll)': x, 'enviro accelerometer Y (pitch)': y, 'enviro accelerometer Z (yaw)': z, 'enviro pressure(hPa)': pressure, 'chance of rain(%)': rainchancepercentage, 'enviro light intensity': e_light, 'Coordinates': Coordinates, 'Reported Time': gpsd.fix.time, 'Altitude (m)': gpsd.fix.altitude, 'Climb (m/s)': gpsd.fix.climb, 'Speed (m/s)': gpsd.fix.speed, 'GPS mode': gpsd.fix.mode}
     return
 
 class transmit():
@@ -203,13 +214,11 @@ def main():
             streamer.log("enviro accelerometer Z (yaw)", z)
 
             ## system monitoring
-            disk = psutil.disk_usage('/')
-            cpu_percent = psutil.cpu_percent(percpu=False)
+
             streamer.log("CPU Usage", cpu_percent)
-            disk_percent_used = disk.percent
+
             streamer.log("Disk Used(%)", str("{0:.2f}".format(disk_percent_used)))
-            mem = psutil.virtual_memory()
-            mem_percent_used = mem.percent
+
             streamer.log("Memory Used(%)", str("{0:.2f}".format(mem_percent_used)))
 
             time.sleep(5)
