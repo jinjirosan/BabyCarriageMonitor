@@ -1,7 +1,7 @@
 # /usr/bin/env python
 #
 # Maintainer 	: JinjiroSan
-# Version	: vegasmonitor 2.0 - initialstate_streamer - rewrite 3.2.3-REFACTOR 0.8
+# Version	: vegasmonitor 2.0 - initialstate_streamer - rewrite 3.2.3-REFACTOR 0.9
 
 import os  ## system terminal access
 import sys  ## for the exit routine
@@ -76,10 +76,10 @@ class weatherdata():
 
     @staticmethod
     def read_temp_headliner():
-        lines_headliner = self.read_temp_raw_headliner()
+        lines_headliner = read_temp_raw_headliner()
         while lines_headliner[0].strip()[-3:] != 'YES':
             time.sleep(0.2)
-            lines_headliner = self.read_temp_raw_headliner()
+            lines_headliner = read_temp_raw_headliner()
         equals_pos = lines_headliner[1].find('t=')
         if equals_pos != -1:
             temp_string_headliner = lines_headliner[1][equals_pos + 2:]
@@ -139,6 +139,7 @@ def collect_env_data():  ## dict must contain all the sanitized clean data to tr
 
 class transmit():
 
+    @staticmethod
     def send_to_dweet():
         mydweet = {}  ## clear any old data in dweet.io table
         mydweet['sender'] = 'stokkezero'  ## add identifier
@@ -146,6 +147,7 @@ class transmit():
         dweepy.dweet_for(thingid, dict_env_data)  ## removed semicolon from end due to pep8, see if this correct.
         return
 
+    @staticmethod
     def send_to_initialstate():
         return
 
@@ -240,8 +242,7 @@ def main():
                 noaddress = "no location data - no gps coords - probably indoors"
                 streamer.log("Location", noaddress)
             else:
-                location = geolocator.reverse(coordinates,
-                                              timeout=10)  ## reverse geocode coordinates
+                location = geolocator.reverse(coordinates, timeout=10)  ## reverse geocode coordinates
                 streamer.log("Location", location.address)
     ## if the geocoder times out, stream a message and keep looping
     except GeocoderTimedOut as e:
