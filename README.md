@@ -8,7 +8,7 @@ This project is trying to move to a smaller Pi Zero-W with one external temp sen
 The code will also livestream to an InitialState bucket instead of my own monitoring platform at home (which I'd guess not 
 many 'normal' people have build in their home ...)
 
-![dashboard example](https://github.com/jinjirosan/BabyCarriageMonitor/blob/master/images/initialstate-dashboard.png)
+![dashboard example](https://github.com/jinjirosan/BabyCarriageMonitor/blob/master/images/initialstate-dashboard2.png)
 ###### --> image: Dashboard example processing the data
 ![device](https://github.com/jinjirosan/BabyCarriageMonitor/blob/master/images/stokkezerobuild.jpg)
 ###### --> image: The device itself, with the active antenna in the back and the ds18b20 temperature sensor on the right
