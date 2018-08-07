@@ -45,4 +45,4 @@ Muiltple files for multiple goals:
 
 The BabyCarriageMonitor currently has a 3G USB dongle attached. An OpenVPN tunnel is automagically started to my network at home essentially making the device a part of my home LAN. Easier remote management.
 
-Currently working on a smaller, more dedicated ahrdware/code voor the next generation version 3. Based on the PyCom platform. PyCom SiPy (bluetooth, WiFi, Sigfox networks), the PyTrack for motion/GPS sensors and the trusty db18b20 temp sensor. By using the Sigfox network , the ranger is increased to most of Europe without the cost of 3G data. The platform itself is inherently more low-power.
+Currently working on a smaller, more dedicated hardware/code voor the next generation version 3 based on the PyCom platform. PyCom SiPy (bluetooth, WiFi, Sigfox networks), the PyTrack for motion/GPS sensors and the trusty db18b20 temp sensor. By using the Sigfox network , the range is increased to most of Europe but without the cost of 3G data. The platform itself is inherently more low-power.
