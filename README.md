@@ -1,4 +1,5 @@
 # BabyCarriageMonitor
+
 Sensors on the baby carriage
 
 This is actually the second version of this project. The previous build is completed and consists of a Rpi3 with three temp sensors and the SenseHAT.
@@ -15,21 +16,21 @@ many 'normal' people have build in their home ...)
 
 The following sensor inputs are used:
 
-| Sensor        | cmd           |  |
-| ------------- |:-------------:| -----:|
-| temperature (pi)     |  |  |
-| temperature (enviro)     |       |   |
-| temperature (ds18b20 sensor headliner)	 |      |    |
-| pressure |       |   |
-| heading (enviro motion) |       |   |
-| light (intensity, dark-bright) |       |  |
-| latitude (gps) |       |    |
-| longitude (gps) |       |   |
-| speed (gps) |      |    |
-| altitude (gps) |      |    |
-| heading (gps, north east south west) |       |    |
-| satellites (gps, #) |      |    |
-| stance (enviro, accelerometer 3-axis)	 |       |  |
+| Sensor                                 |  cmd  |      |
+| -------------------------------------- | :---: | ---: |
+| temperature (pi)                       |       |      |
+| temperature (enviro)                   |       |      |
+| temperature (ds18b20 sensor headliner) |       |      |
+| pressure                               |       |      |
+| heading (enviro motion)                |       |      |
+| light (intensity, dark-bright)         |       |      |
+| latitude (gps)                         |       |      |
+| longitude (gps)                        |       |      |
+| speed (gps)                            |       |      |
+| altitude (gps)                         |       |      |
+| heading (gps, north east south west)   |       |      |
+| satellites (gps, #)                    |       |      |
+| stance (enviro, accelerometer 3-axis)  |       |      |
 
 In order to use the ds18b20, which connects to GPIO 4, the LEDs of the enviroPHAT are not connected (as they also use GPIO 4). So no illumination but we retain the light intensity sensor.
 
